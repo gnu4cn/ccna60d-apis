@@ -12,7 +12,8 @@ from api.conf.auth import auth, refresh_jwt
 from api.database.database import db
 from api.models.models import Blacklist, User
 from api.roles import role_required
-from api.schemas.schemas import UserSchema
+from api.schemas.schemas import user_schema, users_schema
+from api.custom_json_dumps_encoder import CustomJsonDumpEncoder
 
 
 class Register(Resource):
@@ -21,7 +22,8 @@ class Register(Resource):
 
         try:
             # Get username, password and email.
-            username, password, email = request.json.get('username').strip(), request.json.get('password').strip(), \
+            username, password, email = request.json.get('username').strip(), \
+                                        request.json.get('password').strip(), \
                                         request.json.get('email').strip()
         except Exception as why:
 
@@ -43,7 +45,8 @@ class Register(Resource):
             return error.ALREADY_EXIST
 
         # Create a new user.
-        user = User(username=username, password=password, email=email)
+        user = User(username=username, email=email)
+        user.hash_password(password)
 
         # Add user to session.
         db.session.add(user)
@@ -61,9 +64,10 @@ class Login(Resource):
 
         try:
             # Get user email and password.
-            email, password = request.json.get('email').strip(), request.json.get('password').strip()
+            email, password = request.json.get('email').strip(), \
+                                request.json.get('password').strip()
 
-            print(email, password)
+            # print(email, password)
 
         except Exception as why:
 
@@ -78,37 +82,20 @@ class Login(Resource):
             return error.INVALID_INPUT_422
 
         # Get user if it is existed.
-        user = User.query.filter_by(email=email, password=password).first()
+        user = User.query.filter_by(email=email).first()
 
         # Check if user is not existed.
         if user is None:
             return error.DOES_NOT_EXIST
 
-        if user.user_role == 'user':
-
-            # Generate access token. This method takes boolean value for checking admin or normal user. Admin: 1 or 0.
-            access_token = user.generate_auth_token(0)
-
-        # If user is admin.
-        elif user.user_role == 'admin':
-
-            # Generate access token. This method takes boolean value for checking admin or normal user. Admin: 1 or 0.
-            access_token = user.generate_auth_token(1)
-
-        # If user is super admin.
-        elif user.user_role == 'sa':
-
-            # Generate access token. This method takes boolean value for checking admin or normal user. Admin: 2, 1, 0.
-            access_token = user.generate_auth_token(2)
-
-        else:
-            return error.INVALID_INPUT_422
-
-        # Generate refresh token.
-        refresh_token = refresh_jwt.dumps({'email': email})
+        if user.verify_password(password) is False:
+            return error.WRONG_PASSWORD_422
 
         # Return access token and refresh token.
-        return {'access_token': access_token, 'refresh_token': refresh_token}
+        return {
+            'access_token': user.generate_auth_token(),
+            'refresh_token': user.generate_refresh_token()
+        }
 
 
 class Logout(Resource):
@@ -170,7 +157,7 @@ class RefreshToken(Resource):
         user = User(email=data['email'])
 
         # New token generate.
-        token = user.generate_auth_token(False)
+        token = user.generate_auth_token()
 
         # Return new access token.
         return {'access_token': token}
@@ -187,13 +174,13 @@ class ResetPassword(Resource):
         user = User.query.filter_by(email=g.user).first()
 
         # Check if user password does not match with old password.
-        if user.password != old_pass:
+        if user.verify_password(old_pass) is False:
 
             # Return does not match status.
             return {'status': 'old password does not match.'}
 
         # Update password.
-        user.password = new_pass
+        user.hash_password(new_pass)
 
         # Commit session.
         db.session.commit()
@@ -202,43 +189,23 @@ class ResetPassword(Resource):
         return {'status': 'password changed.'}
 
 
-class UsersData(Resource):
+class UsersList(Resource):
     @auth.login_required
     @role_required.permission(2)
     def get(self):
         try:
 
-            # Get usernames.
-            usernames = [] if request.args.get('usernames') is None else request.args.get('usernames').split(',')
-
-            # Get emails.
-            emails = [] if request.args.get('emails') is None else request.args.get('emails').split(',')
-
-            # Get start date.
-            start_date = datetime.strptime(request.args.get('start_date'), '%d.%m.%Y')
-
-            # Get end date.
-            end_date = datetime.strptime(request.args.get('end_date'), '%d.%m.%Y')
-
-            print(usernames, emails, start_date, end_date)
-
-            # Filter users by usernames, emails and range of date.
-            users = User.query\
-                .filter(User.username.in_(usernames))\
-                .filter(User.email.in_(emails))\
-                .filter(User.created.between(start_date, end_date))\
-                .all()
-
-            # Create user schema for serializing.
-            user_schema = UserSchema(many=True)
+            users = User.query.all()
 
             # Get json data
-            data, errors = user_schema.dump(users)
+            data = users_schema.dump(users)
 
             # Return json data from db.
             return data
 
         except Exception as why:
+
+            print(why)
 
             # Log the error.
             logging.error(why)
@@ -255,7 +222,7 @@ class DataAdminRequired(Resource):
     @role_required.permission(1)
     def get(self):
 
-        return "Test admin data OK."
+        return {"status": "Test admin data OK."}
 
 
 class AddUser(Resource):
@@ -263,12 +230,31 @@ class AddUser(Resource):
     @role_required.permission(2)
     def get(self):
 
-        return "OK"
+        return {"status": "OK"}
 
 
-class DataUserRequired(Resource):
+class UserProfile(Resource):
 
     @auth.login_required
-    def get(self):
+    def get(self, id):
+        try:
+            # Get id
+            user = User.query\
+                .filter(User.id == id)\
+                .one()
 
-        return "Test user data OK."
+            # Get json data
+            data = user_schema.dump(user)
+
+            # Return json data from db.
+            return data
+
+        except Exception as why:
+
+            print(why)
+
+            # Log the error.
+            logging.error(why)
+
+            # Return error.
+            return error.INVALID_INPUT_422

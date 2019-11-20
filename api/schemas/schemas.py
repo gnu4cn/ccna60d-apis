@@ -1,32 +1,30 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from marshmallow import Schema, fields
+from flask_marshmallow import Marshmallow
 
+ma = Marshmallow()
 
-class BaseUserSchema(Schema):
-
-    """
-        Base user schema returns all fields but this was not used in user handlers.
-    """
-
-    # Schema parameters.
-
-    id = fields.Int(dump_only=True)
-    username = fields.Str()
-    email = fields.Str()
-    password = fields.Str()
-    created = fields.Str()
-
-
-class UserSchema(Schema):
+class UserProfileSchema(ma.Schema):
 
     """
         User schema returns only username, email and creation time. This was used in user handlers.
     """
 
     # Schema parameters.
+    class Meta:
 
-    username = fields.Str()
-    email = fields.Str()
-    created = fields.Str()
+        fields = ("id", "username", "email", "created", "_links")
+        # https://marshmallow.readthedocs.io/en/latest/_modules/marshmallow/schema.html#Schema
+        dump_only = ("id")
+
+
+    _links = ma.Hyperlinks(
+        {
+            "self": ma.URLFor("user", id="<id>"),
+            "collection": ma.URLFor("users")
+        }
+    )
+
+user_schema = UserProfileSchema()
+users_schema = UserProfileSchema(many=True)

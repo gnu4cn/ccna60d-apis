@@ -4,9 +4,9 @@
 from flask_restful import Api
 
 from api.handlers.UserHandlers import (AddUser, DataAdminRequired,
-                                       DataUserRequired, Login, Logout,
+                                       UserProfile, Login, Logout,
                                        RefreshToken, Register, ResetPassword,
-                                       UsersData)
+                                       UsersList)
 
 
 def generate_routes(app):
@@ -31,13 +31,13 @@ def generate_routes(app):
     api.add_resource(ResetPassword, '/v1/auth/password_reset')
 
     # Get users page with admin permissions.
-    api.add_resource(UsersData, '/users')
+    api.add_resource(UsersList, '/users', endpoint="users")
 
     # Example admin handler for admin permission.
     api.add_resource(DataAdminRequired, '/data_admin')
 
     # Example user handler for user permission.
-    api.add_resource(DataUserRequired, '/data_user')
+    api.add_resource(UserProfile, '/user/<id>', endpoint='user')
 
     # Example user handler for user permission.
     api.add_resource(AddUser, '/user_add')
