@@ -48,6 +48,10 @@ def create_app():
         # Create all database tables.
         db.create_all()
 
+        create_super_admin()
+
+        create_admin_user()
+
     # Return app.
     return app
 
@@ -59,15 +63,6 @@ if __name__ == '__main__':
 
     # Create database tables.
     db.create_all()
-
-    # Create default super admin user in database.
-    create_super_admin()
-
-    # Create default admin user in database.
-    create_admin_user()
-
-    # Create default test user in database.
-    create_test_user()
 
     # Generate routes.
     generate_routes(app)

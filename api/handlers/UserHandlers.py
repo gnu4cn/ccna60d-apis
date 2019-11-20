@@ -13,7 +13,6 @@ from api.database.database import db
 from api.models.models import Blacklist, User
 from api.roles import role_required
 from api.schemas.schemas import user_schema, users_schema
-from api.custom_json_dumps_encoder import CustomJsonDumpEncoder
 
 
 class Register(Resource):
@@ -151,7 +150,7 @@ class RefreshToken(Resource):
             logging.error(why)
 
             # If it does not generated return false.
-            return False
+            return {"status": False}
 
         # Create user not to add db. For generating token.
         user = User(email=data['email'])

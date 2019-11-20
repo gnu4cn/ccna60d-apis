@@ -8,7 +8,7 @@ from api.models.models import User
 def create_super_admin():
 
     # Check if admin is existed in db.
-    user = User.query.filter_by(email='test_username').first()
+    user = User.query.filter_by(email='sa_mail@example.com').first()
 
     # If user is none.
     if user is None:
@@ -37,7 +37,7 @@ def create_super_admin():
 def create_admin_user():
 
     # Check if admin is existed in db.
-    user = User.query.filter_by(email='admin').first()
+    user = User.query.filter_by(email='admin_email@example.com').first()
 
     # If user is none.
     if user is None:
@@ -65,7 +65,7 @@ def create_admin_user():
 def create_test_user(username=None, password="test_password", email=None, user_role=None):
 
     # Check if admin is existed in db.
-    user = User.query.filter_by(email='test_username').first()
+    user = User.query.filter_by(email='test_email@example.com').first()
 
     # If user is none.
     if user is None:
