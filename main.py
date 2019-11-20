@@ -61,9 +61,6 @@ if __name__ == '__main__':
     # Create app.
     app = create_app()
 
-    # Create database tables.
-    db.create_all()
-
     # Generate routes.
     generate_routes(app)
 
