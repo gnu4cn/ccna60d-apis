@@ -9,9 +9,9 @@ from flask_restful import Resource, reqparse
 from sqlalchemy import or_
 
 import api.error.errors as error
-from api.conf.auth import auth, refresh_jwt
+from api.conf.auth import auth
 from api.database.database import db
-from api.models.user_model import Blacklist, User
+from api.models.user_model import User
 from api.roles import role_required
 from api.schemas.schemas import user_schema, users_schema
 
@@ -111,82 +111,11 @@ class Login(Resource):
         # Return access token and refresh token.
         return {
             'access_token': user.generate_auth_token(),
-            'refresh_token': user.generate_refresh_token()
         }
 
 logoutParser = reqparse.RequestParser()
 logoutParser.add_argument('refresh_token', type=str, help='刷新令牌', \
                           required=True, location='json')
-
-class Logout(Resource):
-    @staticmethod
-    @auth.login_required
-    def post():
-
-        args = logoutParser.parse_args()
-
-        # Get refresh token.
-        refresh_token = args['refresh_token']
-
-        # Get if the refresh token is in blacklist
-        ref = Blacklist.query.filter_by(refresh_token=refresh_token).first()
-
-        # Check refresh token is existed.
-        if ref is not None:
-            return {'status': 'already invalidated', 'refresh_token': refresh_token}
-
-        # Create a blacklist refresh token.
-        blacklist_refresh_token = Blacklist(refresh_token=refresh_token)
-
-        # Add refresh token to session.
-        db.session.add(blacklist_refresh_token)
-
-        # Commit session.
-        db.session.commit()
-
-        # Return status of refresh token.
-        return {'status': 'invalidated', 'refresh_token': refresh_token}
-
-refreshParser = reqparse.RequestParser()
-refreshParser.add_argument('refresh_token', type=str, help='刷新令牌', \
-                          required=True, location='json')
-
-class RefreshToken(Resource):
-    @staticmethod
-    def post():
-
-        args = refreshParser.parse_args()
-        # Get refresh token.
-        refresh_token = args['refresh_token']
-
-        # Get if the refresh token is in blacklist.
-        ref = Blacklist.query.filter_by(refresh_token=refresh_token).first()
-
-        # Check refresh token is existed.
-        if ref is not None:
-
-            # Return invalidated token.
-            return {'status': 'invalidated'}
-
-        try:
-            # Generate new token.
-            data = refresh_jwt.loads(refresh_token)
-
-        except Exception as why:
-            # Log the error.
-            logging.error(why)
-
-            # If it does not generated return false.
-            return {"status": False}
-
-        # Create user not to add db. For generating token.
-        user = User(email=data['email'])
-
-        # New token generate.
-        token = user.generate_auth_token()
-
-        # Return new access token.
-        return {'access_token': token}
 
 
 resetParser = reqparse.RequestParser()

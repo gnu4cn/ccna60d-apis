@@ -6,14 +6,14 @@ from passlib.apps import custom_app_context as pwd_context
 
 from flask import g
 
-from api.conf.auth import auth, jwt, refresh_jwt
+from api.conf.auth import auth, jwt
 from api.database.database import db
 
 
 class User(db.Model):
 
     # Generates default class name for table. For changing use
-    # __tablename__ = 'users'
+    __tablename__ = 'sys_users'
 
     # User id.
     id = db.Column(db.Integer, primary_key=True)
@@ -43,11 +43,6 @@ class User(db.Model):
     def generate_auth_token(self):
 
         return str(jwt.dumps({'email': self.email, 'admin': self.user_role}), encoding='utf-8')
-
-    # Generates refresh token.
-    def generate_refresh_token(self):
-
-        return str(refresh_jwt.dumps({'email': self.email, 'admin': self.user_role}), encoding='utf-8')
 
     # Generates a new access token from refresh token.
     @staticmethod
@@ -85,21 +80,3 @@ class User(db.Model):
         # This is only for representation how you want to see user information after query.
         return "<User(id='%s', name='%s', password='%s', email='%s', created='%s')>" % (
             self.id, self.username, self.password, self.email, self.created)
-
-
-class Blacklist(db.Model):
-
-    # Generates default class name for table. For changing use
-    # __tablename__ = 'users'
-
-    # Blacklist id.
-    id = db.Column(db.Integer, primary_key=True)
-
-    # Blacklist invalidated refresh tokens.
-    refresh_token = db.Column(db.String(length=255))
-
-    def __repr__(self):
-
-        # This is only for representation how you want to see refresh tokens after query.
-        return "<User(id='%s', refresh_token='%s', status='invalidated.')>" % (
-            self.id, self.refresh_token)

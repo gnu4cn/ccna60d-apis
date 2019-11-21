@@ -8,16 +8,19 @@ from api.models.user_model import User
 def create_super_admin():
 
     # Check if admin is existed in db.
-    user = User.query.filter_by(email='sa_mail@example.com').first()
+    user = User.query.filter_by(user_role=3).first()
 
     # If user is none.
     if user is None:
+        sa_username = input("请输入超级管理员用户名，以回车结束：")
+        sa_email = input('请输入超级管理员邮箱地址，以回车结束：')
+        sa_password = input('请输入超级管理员密码，以回车结束：')
 
         # Create admin user if it does not existed.
-        user = User(username='sa_username',
-                    email='sa_email@example.com', user_role=3)
+        user = User(username=sa_username,
+                    email=sa_email, user_role=3)
 
-        user.hash_password('sa_password')
+        user.hash_password(sa_password)
 
         # Add user to session.
         db.session.add(user)

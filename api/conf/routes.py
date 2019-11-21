@@ -4,8 +4,8 @@
 from flask_restful import Api
 
 from api.handlers.UserHandlers import (AddUser, DataAdminRequired,
-                                       UserProfile, Login, Logout,
-                                       RefreshToken, Register, ResetPassword,
+                                       UserProfile, Login,
+                                       Register, ResetPassword,
                                        UsersList)
 
 
@@ -20,12 +20,6 @@ def generate_routes(app):
 
     # Login page.
     api.add_resource(Login, '/v1/auth/login')
-
-    # Logout page.
-    api.add_resource(Logout, '/v1/auth/logout')
-
-    # Refresh page.
-    api.add_resource(RefreshToken, '/v1/auth/refresh')
 
     # Password reset page. Not forgot.
     api.add_resource(ResetPassword, '/v1/auth/password_reset')

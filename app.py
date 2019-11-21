@@ -5,8 +5,9 @@ import os
 import logging
 
 from flask import Flask
+from sqlalchemy_utils import database_exists
 
-from api.conf.config import SQLALCHEMY_DATABASE_URI
+from api.conf.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFACATIONS
 from api.conf.routes import generate_routes
 from api.database.database import db
 from api.schemas.schemas import ma
@@ -30,7 +31,7 @@ def create_app():
     # Set database url.
     app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFACATIONS
 
     # Database initialize with app.
     db.init_app(app)
@@ -39,18 +40,17 @@ def create_app():
     # 避免循环导入
     ma.init_app(app)
 
-    # Check if there is no database.
-    if not os.path.exists(SQLALCHEMY_DATABASE_URI):
 
-        # New db app if no database.
-        db.app = app
+    # New db app if no database.
+    db.app = app
 
-        # Create all database tables.
+    # Create all database tables.
+    try:
         db.create_all()
 
-        create_super_admin()
+    except:
 
-        create_admin_user()
+        print('create_all is not need.')
 
     # Return app.
     return app
@@ -60,6 +60,8 @@ if __name__ == '__main__':
 
     # Create app.
     app = create_app()
+
+    create_super_admin()
 
     # Generate routes.
     generate_routes(app)
