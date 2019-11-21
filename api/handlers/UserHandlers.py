@@ -4,8 +4,9 @@
 import logging
 from datetime import datetime
 
-from flask import g, request
-from flask_restful import Resource
+from flask import g
+from flask_restful import Resource, reqparse
+from sqlalchemy import or_
 
 import api.error.errors as error
 from api.conf.auth import auth, refresh_jwt
@@ -14,16 +15,26 @@ from api.models.user_model import Blacklist, User
 from api.roles import role_required
 from api.schemas.schemas import user_schema, users_schema
 
+# https://flask-restful.readthedocs.io/en/0.3.5/intermediate-usage.html#full-parameter-parsing-example
+from lib.reqparser_helpers import email
+
+regParser = reqparse.RequestParser()
+regParser.add_argument('username', type=str, help='用户名', location='json',
+                       store_missing=True, default='visitor')
+regParser.add_argument('password', type=str, help='密码', required=True,
+                       location='json')
+regParser.add_argument('email', type=email, help='邮件地址格式不符合要求',
+                       required=True, location='json')
 
 class Register(Resource):
     @staticmethod
     def post():
 
         try:
+            args = regParser.parse_args()
             # Get username, password and email.
-            username, password, email = request.json.get('username').strip(), \
-                                        request.json.get('password').strip(), \
-                                        request.json.get('email').strip()
+            username, password, email = args['username'], args['password'], \
+                args['email']
         except Exception as why:
 
             # Log input strip or etc. errors.
@@ -56,15 +67,21 @@ class Register(Resource):
         # Return success if registration is completed.
         return {'status': 'registration completed.'}
 
+loginParser = reqparse.RequestParser()
+loginParser.add_argument('password', type=str, help='密码', required=True,
+                       location='json')
+loginParser.add_argument('username_or_email', type=str, help='账户名或邮箱地址', \
+                       required=True, location='json')
 
 class Login(Resource):
     @staticmethod
     def post():
 
         try:
+            args = loginParser.parse_args()
             # Get user email and password.
-            email, password = request.json.get('email').strip(), \
-                                request.json.get('password').strip()
+            username_or_email, password = args['username_or_email'], \
+                args['password']
 
             # print(email, password)
 
@@ -77,11 +94,12 @@ class Login(Resource):
             return error.INVALID_INPUT_422
 
         # Check if user information is none.
-        if email is None or password is None:
+        if username_or_email is None or password is None:
             return error.INVALID_INPUT_422
 
         # Get user if it is existed.
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter(or_(User.email==username_or_email,
+                                        User.username==username_or_email)).first()
 
         # Check if user is not existed.
         if user is None:
@@ -96,14 +114,19 @@ class Login(Resource):
             'refresh_token': user.generate_refresh_token()
         }
 
+logoutParser = reqparse.RequestParser()
+logoutParser.add_argument('refresh_token', type=str, help='刷新令牌', \
+                          required=True, location='json')
 
 class Logout(Resource):
     @staticmethod
     @auth.login_required
     def post():
 
+        args = logoutParser.parse_args()
+
         # Get refresh token.
-        refresh_token = request.json.get('refresh_token')
+        refresh_token = args['refresh_token']
 
         # Get if the refresh token is in blacklist
         ref = Blacklist.query.filter_by(refresh_token=refresh_token).first()
@@ -124,13 +147,17 @@ class Logout(Resource):
         # Return status of refresh token.
         return {'status': 'invalidated', 'refresh_token': refresh_token}
 
+refreshParser = reqparse.RequestParser()
+refreshParser.add_argument('refresh_token', type=str, help='刷新令牌', \
+                          required=True, location='json')
 
 class RefreshToken(Resource):
     @staticmethod
     def post():
 
+        args = refreshParser.parse_args()
         # Get refresh token.
-        refresh_token = request.json.get('refresh_token')
+        refresh_token = args['refresh_token']
 
         # Get if the refresh token is in blacklist.
         ref = Blacklist.query.filter_by(refresh_token=refresh_token).first()
@@ -162,12 +189,20 @@ class RefreshToken(Resource):
         return {'access_token': token}
 
 
+resetParser = reqparse.RequestParser()
+resetParser.add_argument('old_password', type=str, help='原密码', required=True,
+                       location='json')
+resetParser.add_argument('new_password', type=str, help='新密码', required=True,
+                       location='json')
+
+
 class ResetPassword(Resource):
     @auth.login_required
     def post(self):
 
+        args = resetParser.parse_args()
         # Get old and new passwords.
-        old_pass, new_pass = request.json.get('old_pass'), request.json.get('new_pass')
+        old_pass, new_pass = args['old_password'], args['new_password']
 
         # Get user. g.user generates email address cause we put email address to g.user in models.py.
         user = User.query.filter_by(email=g.user).first()
