@@ -16,7 +16,7 @@ from api.roles import role_required
 from api.schemas.schemas import user_schema, users_schema
 
 # https://flask-restful.readthedocs.io/en/0.3.5/intermediate-usage.html#full-parameter-parsing-example
-from lib.reqparser_helpers import email
+from helpers.reqparser_helpers import email
 
 regParser = reqparse.RequestParser()
 regParser.add_argument('username', type=str, help='用户名', location='json',
