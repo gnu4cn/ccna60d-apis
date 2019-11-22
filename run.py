@@ -5,7 +5,6 @@ import os
 import logging
 
 from flask import Flask
-from sqlalchemy_utils import database_exists
 
 from api.conf.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFACATIONS
 from api.conf.routes import generate_routes
