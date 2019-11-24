@@ -14,7 +14,7 @@ class UserProfileSchema(ma.Schema):
     # Schema parameters.
     class Meta:
 
-        fields = ("id", "username", "email", "created", "_links")
+        fields = ("id", "username", "email", "created", "activated", "_links")
         # https://marshmallow.readthedocs.io/en/latest/_modules/marshmallow/schema.html#Schema
         dump_only = ("id")
 

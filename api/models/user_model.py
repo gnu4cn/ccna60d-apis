@@ -33,6 +33,8 @@ class User(db.Model):
     # Unless otherwise stated default role is user.
     user_role = db.Column(db.Integer, default='0')
 
+    activated = db.Column(db.Boolean, unique=False, default=False)
+
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
 
