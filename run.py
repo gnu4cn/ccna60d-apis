@@ -11,10 +11,13 @@ from api.conf.routes import generate_routes
 from api.database.database import db
 from api.schemas.schemas import ma
 from api.db_initializer.db_initializer import create_super_admin
+
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
 
-logging.basicConfig(filename='my.log', level=logging.DEBUG, format=LOG_FORMAT,
+logging.basicConfig(filename='my.log',
+                    level=logging.DEBUG,
+                    format=LOG_FORMAT,
                     datefmt=DATE_FORMAT)
 
 # Create a flask app.
