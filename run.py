@@ -50,4 +50,3 @@ if __name__ == '__main__':
     create_super_admin()
     # Debug app
     app.run(port=5000, debug=True, host='localhost', use_reloader=True)
-
