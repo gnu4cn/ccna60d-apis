@@ -10,9 +10,7 @@ from api.conf.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFACATI
 from api.conf.routes import generate_routes
 from api.database.database import db
 from api.schemas.schemas import ma
-from api.db_initializer.db_initializer import (create_admin_user,
-                                               create_super_admin,
-                                               create_test_user)
+from api.db_initializer.db_initializer import create_super_admin
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
 
@@ -47,5 +45,9 @@ generate_routes(app)
 
 if __name__ == '__main__':
 
-    # Run app.
-    app.run()
+    print("Run into CLI.")
+
+    create_super_admin()
+    # Debug app
+    app.run(port=5000, debug=True, host='localhost', use_reloader=True)
+

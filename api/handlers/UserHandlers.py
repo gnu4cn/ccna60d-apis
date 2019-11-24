@@ -83,7 +83,7 @@ class Login(Resource):
             username_or_email, password = args['username_or_email'], \
                 args['password']
 
-            print(username_or_email, password)
+            # print(username_or_email, password)
 
         except Exception as why:
 
