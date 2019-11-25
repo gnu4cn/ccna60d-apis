@@ -6,7 +6,7 @@ from datetime import datetime
 
 from flask import g
 from flask_restful import Resource, reqparse
-from sqlalchemy import or_, and_
+from sqlalchemy import or_
 
 import api.error.errors as error
 from api.conf.auth import auth
@@ -99,12 +99,8 @@ class Login(Resource):
 
         # Get user if it is existed.
         # Only activated can login.
-        user = User.query.filter(
-            and_(
-                (or_(User.email==username_or_email,
-                     User.username==username_or_email)),
-                User.activated == True
-            )
+        user = User.query.filter(or_(User.email==username_or_email,
+                                     User.username==username_or_email)
         ).first()
 
         # Check if user is not existed.
@@ -113,6 +109,9 @@ class Login(Resource):
 
         if user.verify_password(password) is False:
             return error.WRONG_PASSWORD_422
+
+        if user.activated is False:
+            return error.WRONG_ACTIVATED_422
 
         # Return access token and refresh token.
         return {
