@@ -111,16 +111,12 @@ class Login(Resource):
             return error.WRONG_PASSWORD_422
 
         if user.activated is False:
-            return error.WRONG_ACTIVATED_422
+            return error.WRONG_ACTIVATED_403
 
         # Return access token and refresh token.
         return {
             'access_token': user.generate_auth_token(),
         }
-
-logoutParser = reqparse.RequestParser()
-logoutParser.add_argument('refresh_token', type=str, help='刷新令牌', \
-                          required=True, location='json')
 
 
 resetParser = reqparse.RequestParser()
