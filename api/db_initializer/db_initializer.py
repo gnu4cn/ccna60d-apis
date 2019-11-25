@@ -18,7 +18,7 @@ def create_super_admin():
 
         # Create admin user if it does not existed.
         user = User(username=sa_username,
-                    email=sa_email, user_role=3)
+                    email=sa_email, user_role=3, activated=True)
 
         user.hash_password(sa_password)
 

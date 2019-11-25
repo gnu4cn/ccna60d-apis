@@ -6,7 +6,7 @@ from datetime import datetime
 
 from flask import g
 from flask_restful import Resource, reqparse
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 import api.error.errors as error
 from api.conf.auth import auth
@@ -98,8 +98,14 @@ class Login(Resource):
             return error.INVALID_INPUT_422
 
         # Get user if it is existed.
-        user = User.query.filter(or_(User.email==username_or_email,
-                                        User.username==username_or_email)).first()
+        # Only activated can login.
+        user = User.query.filter(
+            and_(
+                (or_(User.email==username_or_email,
+                     User.username==username_or_email)),
+                User.activated == True
+            )
+        ).first()
 
         # Check if user is not existed.
         if user is None:
