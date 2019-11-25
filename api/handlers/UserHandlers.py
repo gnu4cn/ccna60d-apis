@@ -65,8 +65,10 @@ class Register(Resource):
         # Commit session.
         db.session.commit()
 
-        return {'status': 'registration completed.',
-                'activation_sent': user.send_activation_mail()}
+        return {
+            'status': 'registration completed.',
+            'activation_sent': user.send_activation_mail()
+        }
 
 
 loginParser = reqparse.RequestParser()
@@ -246,4 +248,6 @@ class UserSendActivation(Resource):
                 'email': g.email
             }
         else:
-            return {'activation_sent': user.send_activation_mail()}
+            return {
+                'activation_sent': user.send_activation_mail()
+            }
