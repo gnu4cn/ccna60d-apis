@@ -3,9 +3,14 @@
 
 from flask_httpauth import HTTPTokenAuth
 from itsdangerous import TimedJSONWebSignatureSerializer as JWT
+from itsdangerous import URLSafeTimedSerializer as UST
+
+SECRET_KEY = 'lwFGe4Fc5_papO7h97pFrx-XKfMH3_4-9v6lbzQ3Ddf7JhIqVGJxOsPPXB97XIQxdig1cJSJQtEYqSOYLvwgAg'
+SECURITY_PASSWORD_SALT = 'q_Pw0HvoLstvicmBbEKeX-p47ljAUPEicuRoMJC4Oc5MZTbAxE0Rq0LeGxUmwV-KEjIaFAHq6fcZ-X3q80djeg'
 
 # JWT creation.
-jwt = JWT('_RSBUOivZ6PyV72wG9g-4XURAL2vf-zqlA_V-kBvXJOuKZRP4Pq2ESM_YXftpuXj4xJ4GYK9yhCPxRMHH3gKk2rqUBtoYBhDYUaiIndjgoCazHVfkUMniOlN4If1lpvm6bhHq-NtMGcdtY7fBNDiolcpreC5CeFjkxYM5bBZzc8', expires_in=3600)
+jwt = JWT(SECRET_KEY, expires_in=3600)
+ust = UST(SECRET_KEY)
 
 # Auth object creation.
 auth = HTTPTokenAuth('Bearer')

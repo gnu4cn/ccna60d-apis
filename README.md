@@ -4,8 +4,9 @@
 
 _2019-11-24_
 
-- 引入 `activated` 标志，解决`/v1/auth/register` API 未采用 Captcha 限制注册带来的滥用该接口的问题，未激活的注册用户无法登录，系统将定期清理未激活的注册用户
-- 后期可采用图片验证方式，防止自动化注册或登录
+- 引入 `activated` 标志，解决`/v1/auth/register` API 未采用 Captcha 限制注册带来的滥用该接口的问题，未激活的注册用户无法登录，系统将定期清理未激活的注册用户。后期可采用图片验证方式，防止自动化注册或登录
+
+- 加入 `lazy = true` 与 `lazy-apps = true` 到 `uwsgi.ini`，解决偶发的Postgresql `operationalError: SSL error`问题 
 
 _2019-11-23_
 

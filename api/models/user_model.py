@@ -6,7 +6,7 @@ from passlib.apps import custom_app_context as pwd_context
 
 from flask import g
 
-from api.conf.auth import auth, jwt
+from api.conf.auth import auth, jwt, ust, SECURITY_PASSWORD_SALT
 from api.database.database import db
 
 
@@ -44,7 +44,13 @@ class User(db.Model):
     # Generates auth token.
     def generate_auth_token(self):
 
-        return str(jwt.dumps({'email': self.email, 'admin': self.user_role}), encoding='utf-8')
+        return str(jwt.dumps({'email': self.email, 'admin': self.user_role}),
+                   encoding='utf-8')
+
+    # 生成（邮件）激活令牌
+    def generate_activation_token(self):
+        return ust.dumps(self.email, salt=SECURITY_PASSWORD_SALT)
+
 
     # Generates a new access token from refresh token.
     @staticmethod
