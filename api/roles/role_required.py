@@ -11,6 +11,10 @@ from api.conf.auth import jwt
 
 # from werkzeug.datastructures import Authorization
 
+# 0 - 注册未激活
+# 1 - 注册已激活
+# 2 - 管理员
+# 3 - 超级管理员
 
 def permission(arg):
 

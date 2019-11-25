@@ -34,8 +34,6 @@ class User(db.Model):
     # Unless otherwise stated default role is user.
     user_role = db.Column(db.Integer, default='0')
 
-    activated = db.Column(db.Boolean, unique=False, default=False)
-
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
 
@@ -46,10 +44,43 @@ class User(db.Model):
     def generate_auth_token(self):
 
         return str(jwt.dumps({
+            'username': self.username,
             'email': self.email,
-            'admin': self.user_role,
-            'activated': self.activated
+            'role': self.user_role
         }), encoding='utf-8')
+
+    @staticmethod
+    @auth.verify_token
+    def verify_auth_token(token):
+
+        # Create a global none user.
+        g.user = None
+
+        try:
+            # Load token.
+            data = jwt.loads(token)
+
+        except:
+            # If any error return false.
+            return False
+
+        # Check if email and admin permission variables are in jwt.
+        if 'email' and 'role' in data:
+
+            g.username = data['username']
+
+            # Set email from jwt.
+            g.email = data['email']
+
+            # Set admin permission from jwt.
+            g.role = data['role']
+
+            # Return true.
+            return True
+
+        # If does not verified, return false.
+        return False
+
 
     # 生成（邮件）激活令牌
     def generate_activation_token(self):
@@ -69,36 +100,7 @@ class User(db.Model):
 
         return True
 
-    # Generates a new access token from refresh token.
-    @staticmethod
-    @auth.verify_token
-    def verify_auth_token(token):
 
-        # Create a global none user.
-        g.user = None
-
-        try:
-            # Load token.
-            data = jwt.loads(token)
-
-        except:
-            # If any error return false.
-            return False
-
-        # Check if email and admin permission variables are in jwt.
-        if ('email' and 'admin' in data) and (data['activated'] == True):
-
-            # Set email from jwt.
-            g.user = data['email']
-
-            # Set admin permission from jwt.
-            g.admin = data['admin']
-
-            # Return true.
-            return True
-
-        # If does not verified, return false.
-        return False
 
     def __repr__(self):
 

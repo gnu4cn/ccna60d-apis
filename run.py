@@ -30,10 +30,12 @@ logging.basicConfig(filename='my.log',
                     datefmt=DATE_FORMAT)
 
 # Create a flask app.
+# 这里涉及到 Flask 模板机制，render_template将在根目录下的 templates 文件夹中
+# 查找模板文件
 app = Flask(__name__, template_folder="templates")
 
 # Set debug true for catching the errors.
-app.config['DEBUG'] = False
+app.config['DEBUG'] = True
 
 # Set database url.
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI

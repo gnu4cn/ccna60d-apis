@@ -6,7 +6,8 @@ from flask_restful import Api
 from api.handlers.UserHandlers import (AddUser, DataAdminRequired,
                                        UserProfile, Login,
                                        Register, ResetPassword,
-                                       UsersList, UserActivation)
+                                       UsersList, UserActivation,
+                                       UserSendActivation)
 
 
 def generate_routes(app):
@@ -37,3 +38,5 @@ def generate_routes(app):
     api.add_resource(AddUser, '/user_add')
 
     api.add_resource(UserActivation, '/activation/<token>', endpoint='activation')
+
+    api.add_resource(UserSendActivation, '/send_activation_mail')

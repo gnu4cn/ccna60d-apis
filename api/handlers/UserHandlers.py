@@ -14,6 +14,7 @@ from api.database.database import db
 from api.models.user_model import User
 from api.roles import role_required
 from api.schemas.schemas import user_schema, users_schema
+from helpers.helpers import confirm_activation
 
 # https://flask-restful.readthedocs.io/en/0.3.5/intermediate-usage.html#full-parameter-parsing-example
 from helpers.reqparser_helpers import email
@@ -64,13 +65,8 @@ class Register(Resource):
         # Commit session.
         db.session.commit()
 
-        if user.send_activation_mail():
-            # Return success if registration is completed.
-            return {'status': 'registration completed.',
-                    'activation_sent': True}
-        else:
-            return {'status': 'registration completed.',
-                    'activation_sent': False}
+        return {'status': 'registration completed.',
+                'activation_sent': user.send_activation_mail()}
 
 
 loginParser = reqparse.RequestParser()
@@ -158,7 +154,7 @@ class ResetPassword(Resource):
 
 class UsersList(Resource):
     @auth.login_required
-    @role_required.permission(2)
+    @role_required.permission(3)
     def get(self):
         try:
 
@@ -186,7 +182,7 @@ class UsersList(Resource):
 
 class DataAdminRequired(Resource):
     @auth.login_required
-    @role_required.permission(1)
+    @role_required.permission(2)
     def get(self):
 
         return {"status": "Test admin data OK."}
@@ -194,7 +190,7 @@ class DataAdminRequired(Resource):
 
 class AddUser(Resource):
     @auth.login_required
-    @role_required.permission(2)
+    @role_required.permission(3)
     def get(self):
 
         return {"status": "OK"}
@@ -205,9 +201,7 @@ class UserProfile(Resource):
     def get(self, id):
         try:
             # Get id
-            user = User.query\
-                .filter(User.id == id)\
-                .one()
+            user = User.query.filter_by(id = id).first()
 
             # Get json data
             data = user_schema.dump(user)
@@ -226,6 +220,30 @@ class UserProfile(Resource):
             return error.INVALID_INPUT_422
 
 class UserActivation(Resource):
-    @staticmethod
     def get(self, token):
-        pass
+        result = confirm_activation(token)
+
+        if result is False:
+            return {'status': 'Activation failed'}
+        else:
+            user = User.query.filter_by(email=result).first()
+
+            user.user_role = 1
+
+            db.session.commit()
+
+            return {'status': 'Activation complete.'}
+
+
+class UserSendActivation(Resource):
+    @auth.login_required
+    def get(self):
+        user = User.query.filter_by(email=g.email).first()
+
+        if user.user_role > 0:
+            return {
+                'status': 'User already activated.',
+                'email': g.email
+            }
+        else:
+            return {'activation_sent': user.send_activation_mail()}

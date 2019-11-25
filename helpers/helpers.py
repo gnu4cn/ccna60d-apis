@@ -1,5 +1,7 @@
 import json
-from api.conf.auth import ust
+from api.conf.auth import (ust,
+                           SECURITY_PASSWORD_SALT,
+                           ACTIVATION_EXPIRATION)
 
 class CustomJsonDumpEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -8,14 +10,15 @@ class CustomJsonDumpEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 # 激活确认
-def confirm_activation(token, expiration=15*60):
+def confirm_activation(token, expiration=ACTIVATION_EXPIRATION*60):
     try:
         email = ust.loads(
             token,
             salt = SECURITY_PASSWORD_SALT,
             max_age = expiration
         )
-    except:
+
+    except Exception as why:
         return False
 
     return email
