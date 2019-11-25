@@ -64,8 +64,14 @@ class Register(Resource):
         # Commit session.
         db.session.commit()
 
-        # Return success if registration is completed.
-        return {'status': 'registration completed.'}
+        if user.send_activation_mail():
+            # Return success if registration is completed.
+            return {'status': 'registration completed.',
+                    'activation_sent': True}
+        else:
+            return {'status': 'registration completed.',
+                    'activation_sent': False}
+
 
 loginParser = reqparse.RequestParser()
 loginParser.add_argument('password', type=str, help='密码', required=True,
@@ -109,9 +115,6 @@ class Login(Resource):
 
         if user.verify_password(password) is False:
             return error.WRONG_PASSWORD_422
-
-        if user.activated is False:
-            return error.WRONG_ACTIVATED_403
 
         # Return access token and refresh token.
         return {
@@ -198,7 +201,6 @@ class AddUser(Resource):
 
 
 class UserProfile(Resource):
-
     @auth.login_required
     def get(self, id):
         try:
@@ -222,3 +224,8 @@ class UserProfile(Resource):
 
             # Return error.
             return error.INVALID_INPUT_422
+
+class UserActivation(Resource):
+    @staticmethod
+    def get(self, token):
+        pass

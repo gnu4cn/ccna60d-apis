@@ -4,10 +4,11 @@
 from datetime import datetime
 from passlib.apps import custom_app_context as pwd_context
 
-from flask import g
+from flask import g, render_template, url_for
 
 from api.conf.auth import auth, jwt, ust, SECURITY_PASSWORD_SALT
 from api.database.database import db
+from mail_sender.mail import send_email
 
 
 class User(db.Model):
@@ -44,13 +45,29 @@ class User(db.Model):
     # Generates auth token.
     def generate_auth_token(self):
 
-        return str(jwt.dumps({'email': self.email, 'admin': self.user_role}),
-                   encoding='utf-8')
+        return str(jwt.dumps({
+            'email': self.email,
+            'admin': self.user_role,
+            'activated': self.activated
+        }), encoding='utf-8')
 
     # 生成（邮件）激活令牌
     def generate_activation_token(self):
         return ust.dumps(self.email, salt=SECURITY_PASSWORD_SALT)
 
+    def send_activation_mail(self):
+        token = self.generate_activation_token()
+        url = url_for('activation', token=token, _external=True)
+        html = render_template("user/activate.html", activation_url=url)
+        subject = "请通过点击此邮件中的链接，激活账号"
+
+        try:
+            send_email(self.email, subject, html)
+        except Exception as why:
+            print(why)
+            return False
+
+        return True
 
     # Generates a new access token from refresh token.
     @staticmethod
@@ -69,7 +86,7 @@ class User(db.Model):
             return False
 
         # Check if email and admin permission variables are in jwt.
-        if 'email' and 'admin' in data:
+        if ('email' and 'admin' in data) and (data['activated'] == True):
 
             # Set email from jwt.
             g.user = data['email']

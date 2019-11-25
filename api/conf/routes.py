@@ -6,7 +6,7 @@ from flask_restful import Api
 from api.handlers.UserHandlers import (AddUser, DataAdminRequired,
                                        UserProfile, Login,
                                        Register, ResetPassword,
-                                       UsersList)
+                                       UsersList, UserActivation)
 
 
 def generate_routes(app):
@@ -35,3 +35,5 @@ def generate_routes(app):
 
     # Example user handler for user permission.
     api.add_resource(AddUser, '/user_add')
+
+    api.add_resource(UserActivation, '/activation/<token>', endpoint='activation')

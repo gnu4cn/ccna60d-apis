@@ -6,11 +6,20 @@ import logging
 
 from flask import Flask
 
-from api.conf.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFACATIONS
+from api.conf.config import (SQLALCHEMY_DATABASE_URI,
+                             SQLALCHEMY_TRACK_MODIFACATIONS,
+                             MAIL_SERVER,
+                             MAIL_PORT,
+                             MAIL_PASSWORD,
+                             MAIL_USERNAME,
+                             MAIL_USE_SSL,
+                             DEFAULT_MAIL_SENDER
+                             )
 from api.conf.routes import generate_routes
 from api.database.database import db
 from api.schemas.schemas import ma
 from api.db_initializer.db_initializer import create_super_admin
+from mail_sender.mail import mail
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
@@ -21,15 +30,22 @@ logging.basicConfig(filename='my.log',
                     datefmt=DATE_FORMAT)
 
 # Create a flask app.
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 
 # Set debug true for catching the errors.
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False
 
 # Set database url.
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFACATIONS
+
+# Set email parameters
+app.config['MAIL_SERVER'] = MAIL_SERVER
+app.config['MAIL_PORT'] = MAIL_PORT
+app.config['MAIL_USERNAME'] = MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
+app.config['MAIL_USE_SSL'] = MAIL_USE_SSL
+app.config['DEFAULT_MAIL_SENDER'] = DEFAULT_MAIL_SENDER
 
 # Database initialize with app.
 db.init_app(app)
@@ -37,7 +53,7 @@ db.init_app(app)
 # Marshmallow initialize with app.
 # 避免循环导入
 ma.init_app(app)
-
+mail.init_app(app)
 
 # New db app if no database.
 db.app = app
