@@ -11,8 +11,11 @@ SECURITY_PASSWORD_SALT = 'q_Pw0HvoLstvicmBbEKeX-p47ljAUPEicuRoMJC4Oc5MZTbAxE0Rq0
 # 邮件激活有效期（分钟）
 ACTIVATION_EXPIRATION = 30
 
+# 认证令牌有效期（天）
+TOKEN_EXPIRATION = 7
+
 # JWT creation.
-jwt = JWT(SECRET_KEY, expires_in=3600)
+jwt = JWT(SECRET_KEY, expires_in=TOKEN_EXPIRATION*24*60*60)
 ust = UST(SECRET_KEY)
 
 # Auth object creation.
