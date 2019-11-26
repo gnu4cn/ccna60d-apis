@@ -2,6 +2,12 @@
 
 ## Changelog
 
+_2019-11-25_
+
+- 去除 `activated` 属性，直接使用`user_role`属性判断注册用户是否已激活。`0 - 注册未激活`、`1-注册已激活`、`2-管理员`、`3-超级管理员`
+- 使用`itsdangerous`库的`URLSafeTimedSerializer`生成激活链接
+- 使用 Flask-Mail 发送激活邮件
+
 _2019-11-24_
 
 - 引入 `activated` 标志，解决`/v1/auth/register` API 未采用 Captcha 限制注册带来的滥用该接口的问题，未激活的注册用户无法登录，系统将定期清理未激活的注册用户。后期可采用图片验证方式，防止自动化注册或登录
