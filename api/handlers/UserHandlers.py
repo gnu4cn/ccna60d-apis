@@ -9,7 +9,7 @@ from flask_restful import Resource, reqparse
 from sqlalchemy import or_
 
 import api.error.errors as error
-from api.conf.auth import auth
+from api.conf.auth import auth, TOKEN_EXPIRATION
 from api.database.database import db
 from api.models.user_model import User
 from api.roles import role_required
@@ -117,6 +117,7 @@ class Login(Resource):
         # Return access token and refresh token.
         return {
             'access_token': user.generate_auth_token(),
+            'token_expiration': TOKEN_EXPIRATION
         }
 
 

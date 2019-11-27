@@ -10,7 +10,7 @@ class CustomJsonDumpEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 # 激活确认
-def confirm_activation(token, expiration=ACTIVATION_EXPIRATION*60):
+def confirm_activation(token, expiration=ACTIVATION_EXPIRATION):
     try:
         email = ust.loads(
             token,
