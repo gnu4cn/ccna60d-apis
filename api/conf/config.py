@@ -30,3 +30,11 @@ MAIL_USE_SSL = True
 MAIL_USERNAME = 'gnu4cn@163.com'
 MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 DEFAULT_MAIL_SENDER='gnu4cn@163.com'
+
+# 正则表达式：必须以大小写字母开头，只能包含大小写字母、数字、下划线和短横线
+USERNAME_REGEX = '^[a-zA-Z0-9_]{1}[a-zA-Z0-9_-]{4,24}$'
+
+# 非常好的验证邮件地址的正则表达式
+EMAIL_REGEX = '^[a-zA-Z0-9_.+-]{5,25}\@[a-zA-Z0-9-]{2,16}\.[a-zA-Z]{2,4}$'
+EMAIL_USERNAME_REGEX = '^([a-zA-Z0-9_.+-]{5,25}|[a-zA-Z0-9_]{1})([a-zA-Z0-9_-]{4,24}|\@[a-zA-Z0-9-]{2,16}\.[a-zA-Z]{2,4})$'
+

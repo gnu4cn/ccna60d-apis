@@ -17,14 +17,17 @@ from api.schemas.schemas import user_schema, users_schema
 from helpers.helpers import confirm_activation
 
 # https://flask-restful.readthedocs.io/en/0.3.5/intermediate-usage.html#full-parameter-parsing-example
-from helpers.reqparser_helpers import email
+from helpers.reqparser_helpers import (t_email,
+                                       t_username,
+                                       t_password,
+                                       t_email_username)
 
 regParser = reqparse.RequestParser()
-regParser.add_argument('username', type=str, help='用户名', location='json',
+regParser.add_argument('username', type=t_username, help='用户名', location='json',
                        store_missing=True, default='visitor')
-regParser.add_argument('password', type=str, help='密码', required=True,
+regParser.add_argument('password', type=t_password, help='密码', required=True,
                        location='json')
-regParser.add_argument('email', type=email, help='邮件地址格式不符合要求',
+regParser.add_argument('email', type=t_email, help='邮件地址格式不符合要求',
                        required=True, location='json')
 
 class Register(Resource):
@@ -76,9 +79,9 @@ class Register(Resource):
 
 
 loginParser = reqparse.RequestParser()
-loginParser.add_argument('password', type=str, help='密码', required=True,
+loginParser.add_argument('password', type=t_password, help='密码', required=True,
                          location='json')
-loginParser.add_argument('username_or_email', type=str, help='账户名或邮箱地址', \
+loginParser.add_argument('username_or_email', type=t_email_username, help='账户名或邮箱地址', \
                          required=True, location='json')
 
 class Login(Resource):
@@ -127,9 +130,9 @@ class Login(Resource):
 
 
 resetParser = reqparse.RequestParser()
-resetParser.add_argument('old_password', type=str, help='原密码', required=True,
+resetParser.add_argument('old_password', type=t_password, help='原密码', required=True,
                          location='json')
-resetParser.add_argument('new_password', type=str, help='新密码', required=True,
+resetParser.add_argument('new_password', type=t_password, help='新密码', required=True,
                          location='json')
 
 
