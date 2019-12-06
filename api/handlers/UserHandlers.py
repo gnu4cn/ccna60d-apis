@@ -232,7 +232,7 @@ class UserActivation(Resource):
         result = confirm_activation(token)
 
         if result is False:
-            return {'status': 'Activation failed'}
+            return {'status': 'Activation failed, activation link invalid due to expired'}
         else:
             user = User.query.filter_by(email=result).first()
 
