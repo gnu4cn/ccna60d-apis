@@ -5,6 +5,7 @@ import os
 import logging
 
 from flask import Flask
+from flask_cors import CORS
 
 from api.conf.config import (SQLALCHEMY_DATABASE_URI,
                              SQLALCHEMY_TRACK_MODIFACATIONS,
@@ -33,6 +34,7 @@ logging.basicConfig(filename='my.log',
 # 这里涉及到 Flask 模板机制，render_template将在根目录下的 templates 文件夹中
 # 查找模板文件
 app = Flask(__name__, template_folder="templates")
+cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:8100"}})
 
 # Set debug true for catching the errors.
 app.config['DEBUG'] = True

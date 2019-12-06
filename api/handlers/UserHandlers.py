@@ -49,7 +49,10 @@ class Register(Resource):
             return error.INVALID_INPUT_422
 
         # Get user if it is existed.
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter(or_(
+            User.email == email,
+            User.username == username
+        )).first()
 
         # Check if user is existed.
         if user is not None:
@@ -66,6 +69,7 @@ class Register(Resource):
         db.session.commit()
 
         return {
+            'registered_email': user.email,
             'status': 'registration completed.',
             'activation_sent': user.send_activation_mail()
         }
@@ -73,9 +77,9 @@ class Register(Resource):
 
 loginParser = reqparse.RequestParser()
 loginParser.add_argument('password', type=str, help='密码', required=True,
-                       location='json')
+                         location='json')
 loginParser.add_argument('username_or_email', type=str, help='账户名或邮箱地址', \
-                       required=True, location='json')
+                         required=True, location='json')
 
 class Login(Resource):
     @staticmethod
@@ -105,7 +109,7 @@ class Login(Resource):
         # Only activated can login.
         user = User.query.filter(or_(User.email==username_or_email,
                                      User.username==username_or_email)
-        ).first()
+                                 ).first()
 
         # Check if user is not existed.
         if user is None:
@@ -116,6 +120,7 @@ class Login(Resource):
 
         # Return access token and refresh token.
         return {
+            'is_activated': user.user_role != 0,
             'access_token': user.generate_auth_token(),
             'token_expiration': TOKEN_EXPIRATION
         }
@@ -123,9 +128,9 @@ class Login(Resource):
 
 resetParser = reqparse.RequestParser()
 resetParser.add_argument('old_password', type=str, help='原密码', required=True,
-                       location='json')
+                         location='json')
 resetParser.add_argument('new_password', type=str, help='新密码', required=True,
-                       location='json')
+                         location='json')
 
 
 class ResetPassword(Resource):
