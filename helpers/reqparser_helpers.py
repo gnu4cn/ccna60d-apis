@@ -28,7 +28,7 @@ def t_email(email_str):
         raise ValueError('{} is not a valid email'.format(email_str))
 
 def t_password(password_str):
-    if password_str.length >= 5:
+    if len(password_str) >= 5:
         return password_str
     else:
         raise ValueError('{} is not a valid passord'.format(password_str))
