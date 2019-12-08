@@ -145,7 +145,7 @@ class ResetPassword(Resource):
         old_pass, new_pass = args['old_password'], args['new_password']
 
         # Get user. g.user generates email address cause we put email address to g.user in models.py.
-        user = User.query.filter_by(email=g.user).first()
+        user = User.query.filter_by(email=g.email).first()
 
         # Check if user password does not match with old password.
         if user.verify_password(old_pass) is False:
