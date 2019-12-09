@@ -27,7 +27,7 @@ MAIL_SERVER = 'smtp.163.com'
 MAIL_PORT = 994
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'gnu4cn@163.com'
-MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+MAIL_PASSWORD = os.getenv('MAIL_PW')
 DEFAULT_MAIL_SENDER='gnu4cn@163.com'
 
 # 正则表达式：必须以大小写字母开头，只能包含大小写字母、数字、下划线和短横线
