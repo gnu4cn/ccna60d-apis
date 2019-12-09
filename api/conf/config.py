@@ -10,7 +10,7 @@ POSTGRES_USER='peng'
 # os.getenv() 所能获取到的环境变量，与系统环境变量有所不同，是设置在
 # conf.d/uwsgi.conf配置文件中的
 POSTGRES_PW=os.getenv('POSTGRES_PW')
-POSTGRES_URL='localhost:5432'
+POSTGRES_URL='127.0.0.1:5432'
 POSTGRES_DB='ccna60d_apis'
 
 DB_URL = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(
