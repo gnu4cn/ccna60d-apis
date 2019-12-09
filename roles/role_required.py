@@ -6,8 +6,8 @@ import logging
 
 from flask import request
 
-import api.error.errors as error
-from api.conf.auth import jwt
+import error.errors as error
+from conf.auth import jwt
 
 # from werkzeug.datastructures import Authorization
 

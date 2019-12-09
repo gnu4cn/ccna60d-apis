@@ -7,19 +7,19 @@ import logging
 from flask import Flask
 from flask_cors import CORS
 
-from api.conf.config import (SQLALCHEMY_DATABASE_URI,
-                             SQLALCHEMY_TRACK_MODIFACATIONS,
-                             MAIL_SERVER,
-                             MAIL_PORT,
-                             MAIL_PASSWORD,
-                             MAIL_USERNAME,
-                             MAIL_USE_SSL,
-                             DEFAULT_MAIL_SENDER
-                             )
-from api.conf.routes import generate_routes
-from api.database.database import db
-from api.schemas.schemas import ma
-from api.db_initializer.db_initializer import create_super_admin
+from conf.config import (SQLALCHEMY_DATABASE_URI,
+                         SQLALCHEMY_TRACK_MODIFACATIONS,
+                         MAIL_SERVER,
+                         MAIL_PORT,
+                         MAIL_PASSWORD,
+                         MAIL_USERNAME,
+                         MAIL_USE_SSL,
+                         DEFAULT_MAIL_SENDER
+                         )
+from api.routes import generate_routes
+from database.database import db
+from schemas.schemas import ma
+from db_initializer.db_initializer import create_super_admin
 from mail_sender.mail import mail
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"

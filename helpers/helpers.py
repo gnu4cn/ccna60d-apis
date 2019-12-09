@@ -1,7 +1,7 @@
 import json
-from api.conf.auth import (ust,
-                           SECURITY_PASSWORD_SALT,
-                           ACTIVATION_EXPIRATION)
+from conf.auth import (ust,
+                       SECURITY_PASSWORD_SALT,
+                       ACTIVATION_EXPIRATION)
 
 class CustomJsonDumpEncoder(json.JSONEncoder):
     def default(self, obj):

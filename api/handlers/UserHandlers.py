@@ -8,12 +8,12 @@ from flask import g
 from flask_restful import Resource, reqparse
 from sqlalchemy import or_
 
-import api.error.errors as error
-from api.conf.auth import auth, TOKEN_EXPIRATION
-from api.database.database import db
-from api.models.user_model import User
-from api.roles import role_required
-from api.schemas.schemas import user_schema, users_schema
+import error.errors as error
+from conf.auth import auth, TOKEN_EXPIRATION
+from database.database import db
+from models.user_model import User
+from roles import role_required
+from schemas.schemas import user_schema, users_schema
 from helpers.helpers import confirm_activation
 
 # https://flask-restful.readthedocs.io/en/0.3.5/intermediate-usage.html#full-parameter-parsing-example

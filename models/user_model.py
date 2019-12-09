@@ -6,8 +6,8 @@ from passlib.apps import custom_app_context as pwd_context
 
 from flask import g, render_template, url_for
 
-from api.conf.auth import auth, jwt, ust, SECURITY_PASSWORD_SALT
-from api.database.database import db
+from conf.auth import auth, jwt, ust, SECURITY_PASSWORD_SALT
+from database.database import db
 from mail_sender.mail import send_email
 
 

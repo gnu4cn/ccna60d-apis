@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from api.database.database import db
-from api.models.user_model import User
+from database.database import db
+from models.user_model import User
 
 
 def create_super_admin():

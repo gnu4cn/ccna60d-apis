@@ -3,7 +3,7 @@
 from validate_email import validate_email
 import re
 
-from api.conf.config import USERNAME_REGEX, EMAIL_USERNAME_REGEX
+from conf.config import USERNAME_REGEX, EMAIL_USERNAME_REGEX
 
 username_p = re.compile(USERNAME_REGEX)
 email_username_p = re.compile(EMAIL_USERNAME_REGEX)
