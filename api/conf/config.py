@@ -13,14 +13,13 @@ POSTGRES_PW=os.getenv('POSTGRES_PW')
 POSTGRES_URL='127.0.0.1:5432'
 POSTGRES_DB='ccna60d_apis'
 
-DB_URL = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(
     user=POSTGRES_USER,
     pw=POSTGRES_PW,
     url=POSTGRES_URL,
     db=POSTGRES_DB)
 
 # Create a database in project and get it's path.
-SQLALCHEMY_DATABASE_URI = DB_URL
 SQLALCHEMY_TRACK_MODIFACATIONS = False
 
 # For email sending.
