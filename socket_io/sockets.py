@@ -1,14 +1,13 @@
 #! /usr/bin/python
 from flask_socketio import SocketIO
-from socket_io.namespaces.news import NewsNamespace
+from socket_io.namespaces.default import defaultNamespace
 
 def generate_sockets(app):
 
-    socketio = SocketIO()
+    socketio = SocketIO(app, cors_credentials=False)
 
-    socketio.init_app(app)
+    socketio.on_namespace(defaultNamespace('/'))
+    socketio.on_namespace(defaultNamespace('/news'))
 
-    socketio.on_namespace(NewsNamespace('/news'))
-
-    socketio.run(app, cors_allowed_origins='*', debug=True)
+    socketio.run(debug=True)
 

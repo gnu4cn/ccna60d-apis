@@ -24,6 +24,7 @@ from database.database import db
 from schemas.schemas import ma
 from db_initializer.db_initializer import create_super_admin
 from mail_sender.mail import mail
+from socket_io.sockets import generate_sockets
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
@@ -39,7 +40,13 @@ logging.basicConfig(filename='my.log',
 # 这里涉及到 Flask 模板机制，render_template将在根目录下的 templates 文件夹中
 # 查找模板文件
 app = Flask(__name__, template_folder="templates")
-cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:8100"}})
+
+
+cors = CORS(app, resources={r"/*": {
+    "origins": "http://localhost:8100",
+    # 为了消除客户端的　Access-Control-Allow-Credentials　错误
+    "supports_credentials": True
+}},)
 
 # Set debug true for catching the errors.
 app.config['DEBUG'] = True
@@ -79,3 +86,4 @@ if __name__ == '__main__':
     create_super_admin()
     # Debug app
     app.run(port=5000, debug=True, host='localhost', use_reloader=True)
+    generate_sockets(app)
