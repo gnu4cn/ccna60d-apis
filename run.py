@@ -7,15 +7,18 @@ import logging
 from flask import Flask
 from flask_cors import CORS
 
-from conf.config import (SQLALCHEMY_DATABASE_URI,
-                         SQLALCHEMY_TRACK_MODIFACATIONS,
-                         MAIL_SERVER,
-                         MAIL_PORT,
-                         MAIL_PASSWORD,
-                         MAIL_USERNAME,
-                         MAIL_USE_SSL,
-                         DEFAULT_MAIL_SENDER
-                         )
+from conf.config import (
+    SECRET_KEY,
+    SQLALCHEMY_DATABASE_URI,
+    SQLALCHEMY_TRACK_MODIFACATIONS,
+    MAIL_SERVER,
+    MAIL_PORT,
+    MAIL_PASSWORD,
+    MAIL_USERNAME,
+    MAIL_USE_SSL,
+    DEFAULT_MAIL_SENDER
+)
+
 from api.routes import generate_routes
 from database.database import db
 from schemas.schemas import ma
@@ -24,6 +27,8 @@ from mail_sender.mail import mail
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
+
+
 
 logging.basicConfig(filename='my.log',
                     level=logging.DEBUG,
@@ -38,6 +43,7 @@ cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:8100"}})
 
 # Set debug true for catching the errors.
 app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = SECRET_KEY
 
 # Set database url.
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI

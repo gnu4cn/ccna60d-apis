@@ -5,6 +5,8 @@ import os
 
 # basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
+SECRET_KEY = '4(sa^zn2zi3$r837clx1)lrawfw4#odeqwgfhp2w-&a=y_e13i'
+
 # For the database
 POSTGRES_USER='peng'
 # os.getenv() 所能获取到的环境变量，与系统环境变量有所不同，是设置在

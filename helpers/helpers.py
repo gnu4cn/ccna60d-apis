@@ -22,3 +22,24 @@ def confirm_activation(token, expiration=ACTIVATION_EXPIRATION):
         return False
 
     return email
+
+# socket-io login_required
+def login_required_socket_io(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            token = request.args.get("token", None)
+
+            data = jwt.loads(token)
+
+        except ValueError:
+            disconnect(request.sid)
+
+        except Exception as why:
+            logging.error(why)
+            disconnect(request.sid)
+
+
+        return f(*args, **kwargs)
+
+    return decorated_function
