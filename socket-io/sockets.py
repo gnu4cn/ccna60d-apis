@@ -6,7 +6,6 @@ def generate_sockets(app):
 
     socketio = SocketIO(app, cors_credentials=False)
 
-    socketio.on_namespace(defaultNamespace('/'))
     socketio.on_namespace(defaultNamespace('/news'))
 
     socketio.run(debug=True)
