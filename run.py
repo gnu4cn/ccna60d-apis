@@ -24,7 +24,6 @@ from database.database import db
 from schemas.schemas import ma
 from db_initializer.db_initializer import create_super_admin
 from mail_sender.mail import mail
-from socket_io.sockets import generate_sockets
 
 LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
@@ -86,4 +85,3 @@ if __name__ == '__main__':
     create_super_admin()
     # Debug app
     app.run(port=5000, debug=True, host='localhost', use_reloader=True)
-    generate_sockets(app)

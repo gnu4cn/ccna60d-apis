@@ -6,6 +6,7 @@ import logging
 
 from flask import Flask
 from flask_cors import CORS
+from flask_socketio import SocketIO
 
 from conf.config import (
     SECRET_KEY,
@@ -37,7 +38,7 @@ logging.basicConfig(filename='my.log',
 # 这里涉及到 Flask 模板机制，render_template将在根目录下的 templates 文件夹中
 # 查找模板文件
 app = Flask(__name__, template_folder="templates")
-
+socketio = SocketIO(app, cors_credentials=False)
 
 cors = CORS(app, resources={r"/*": {
     "origins": "http://localhost:8100",
@@ -74,15 +75,15 @@ db.app = app
 
 db.create_all()
 
+
 @app.route('/')
 def index():
 	return 'Yey', 201
+
+generate_sockets(socketio)
 
 if __name__ == '__main__':
 
     print("Run into CLI.")
 
-    create_super_admin()
-    # Debug app
-    app.run(port=5000, debug=True, host='localhost', use_reloader=True)
-    generate_sockets(app)
+    socketio.run(app, port=5001, debug=True, host='localhost', use_reloader=True)
