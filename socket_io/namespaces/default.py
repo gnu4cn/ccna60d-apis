@@ -1,7 +1,7 @@
 #! /usr/bin/python
 from flask_socketio import Namespace, emit
 
-class defaultNamespace(Namespace):
+class metaNamespace(Namespace):
     def on_connect(self):
         emit('connected')
         print('Test')
