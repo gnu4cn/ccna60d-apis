@@ -71,10 +71,6 @@ db.app = app
 db.create_all()
 
 
-@app.route('/')
-def index():
-	return 'Yey', 201
-
 generate_sockets(socketio)
 
 if __name__ == '__main__':
