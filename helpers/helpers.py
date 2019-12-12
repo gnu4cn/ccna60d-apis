@@ -39,7 +39,6 @@ def login_required_socket_io(f):
             logging.error(why)
             disconnect(request.sid)
 
-
         return f(*args, **kwargs)
 
     return decorated_function
